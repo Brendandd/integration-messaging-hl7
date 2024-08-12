@@ -13,15 +13,15 @@ import integration.messaging.hl7.datamodel.HL7Message;
  */
 public abstract class ChangeMessageVersionTransformer extends BaseHL7MessageTransformer {
 
-	public abstract String getNewVersion() throws TransformationException;
+    public abstract String getNewVersion() throws TransformationException;
 
-	@Override
-	public void transform(Exchange exchange, HL7Message source) throws TransformationException {
+    @Override
+    public void transform(Exchange exchange, HL7Message source) throws TransformationException {
 
-		try {
-			source.changeMessageVersion(getNewVersion());
-		} catch (Exception e) {
-			throw new TransformationException("Error transforming the message", e);
-		}
-	}
+        try {
+            source.changeMessageVersion(getNewVersion());
+        } catch (Exception e) {
+            throw new TransformationException("Error transforming the message", e);
+        }
+    }
 }

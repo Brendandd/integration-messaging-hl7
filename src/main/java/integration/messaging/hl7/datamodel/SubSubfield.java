@@ -12,57 +12,57 @@ import org.apache.commons.lang3.StringUtils;
  *
  */
 public class SubSubfield extends MessageComponent implements Serializable {
-	private static final long serialVersionUID = -8174677055244513493L;
+    private static final long serialVersionUID = -8174677055244513493L;
 
-	private String value;
+    private String value;
 
-	private Subfield subField = null;
+    private Subfield subField = null;
 
-	public SubSubfield(String value, Subfield subField) {
-		this.value = value;
-		this.subField = subField;
-	}
+    public SubSubfield(String value, Subfield subField) {
+        this.value = value;
+        this.subField = subField;
+    }
 
-	@Override
-	public String value() {
-		return value;
-	}
+    @Override
+    public String value() {
+        return value;
+    }
 
-	@Override
-	public void setValue(String value) throws Exception {
-		this.value = value;
-	}
+    @Override
+    public void setValue(String value) throws Exception {
+        this.value = value;
+    }
 
-	@Override
-	public String toString() {
-		return value;
-	}
+    @Override
+    public String toString() {
+        return value;
+    }
 
-	@Override
-	public void clear() throws Exception {
-		setValue("");
-	}
+    @Override
+    public void clear() throws Exception {
+        setValue("");
+    }
 
-	public Subfield geSubField() {
-		return subField;
-	}
+    public Subfield geSubField() {
+        return subField;
+    }
 
-	/**
-	 * Is this subfield empty?
-	 * 
-	 * @return
-	 */
-	public boolean isEmpty() {
-		return StringUtils.isBlank(toString());
-	}
+    /**
+     * Is this subfield empty?
+     * 
+     * @return
+     */
+    public boolean isEmpty() {
+        return StringUtils.isBlank(toString());
+    }
 
-	@Override
-	public int hashCode() {
-		return Objects.hashCode(this.toString());
-	}
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(this.toString());
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		return Objects.equals(this.toString(), obj.toString());
-	}
+    @Override
+    public boolean equals(Object obj) {
+        return Objects.equals(this.toString(), obj.toString());
+    }
 }

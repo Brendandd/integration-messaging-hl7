@@ -12,18 +12,18 @@ import integration.messaging.hl7.datamodel.HL7Message;
  */
 public abstract class BaseHL7MessageAcceptancePolicy extends MessageAcceptancePolicy {
 
-	@Override
-	public boolean applyPolicy(String messageContent) throws FilterException {
-		HL7Message hl7Message = new HL7Message(messageContent);
+    @Override
+    public boolean applyPolicy(String messageContent) throws FilterException {
+        HL7Message hl7Message = new HL7Message(messageContent);
 
-		return applyPolicy(hl7Message);
-	}
+        return applyPolicy(hl7Message);
+    }
 
-	/**
-	 * Does the actual transformation.
-	 * 
-	 * @param source
-	 * @return
-	 */
-	public abstract boolean applyPolicy(HL7Message source) throws FilterException;
+    /**
+     * Does the actual transformation.
+     * 
+     * @param source
+     * @return
+     */
+    public abstract boolean applyPolicy(HL7Message source) throws FilterException;
 }

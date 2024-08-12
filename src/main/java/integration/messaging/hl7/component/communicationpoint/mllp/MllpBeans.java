@@ -11,14 +11,14 @@ import org.springframework.stereotype.Component;
 @Component
 public class MllpBeans {
 
-	@Bean
-	public HL7MLLPNettyDecoderFactory hl7decoder() {
-		return new HL7MLLPNettyDecoderFactory();
-	}
+    @Bean
+    public HL7MLLPNettyDecoderFactory hl7decoder() {
+        return new HL7MLLPNettyDecoderFactory();
+    }
 
-	@Bean
-	public HL7MLLPNettyEncoderFactory hl7encoder() {
-		return new HL7MLLPNettyEncoderFactory();
-	}
+    @Bean
+    public HL7MLLPNettyEncoderFactory hl7encoder() {
+        return new HL7MLLPNettyEncoderFactory();
+    }
 
 }

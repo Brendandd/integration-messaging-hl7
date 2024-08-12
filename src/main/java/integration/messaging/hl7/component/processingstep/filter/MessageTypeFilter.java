@@ -10,26 +10,26 @@ import integration.messaging.hl7.datamodel.HL7Message;
  * @author Brendan Douglas
  */
 public abstract class MessageTypeFilter extends BaseHL7MessageAcceptancePolicy {
-	public abstract String[] getAllowedMessageTypes();
+    public abstract String[] getAllowedMessageTypes();
 
-	protected String messageType = null;
+    protected String messageType = null;
 
-	@Override
-	public boolean applyPolicy(HL7Message source) throws FilterException {
+    @Override
+    public boolean applyPolicy(HL7Message source) throws FilterException {
 
-		try {
-			String incomingMessageType = source.getMessageTypeField().value();
-			messageType = incomingMessageType;
+        try {
+            String incomingMessageType = source.getMessageTypeField().value();
+            messageType = incomingMessageType;
 
-			for (String messageType : getAllowedMessageTypes()) {
-				if (incomingMessageType.equals(messageType)) {
-					return true;
-				}
-			}
-		} catch (Exception e) {
-			throw new FilterException("Error filtering the message", e);
-		}
+            for (String messageType : getAllowedMessageTypes()) {
+                if (incomingMessageType.equals(messageType)) {
+                    return true;
+                }
+            }
+        } catch (Exception e) {
+            throw new FilterException("Error filtering the message", e);
+        }
 
-		return false;
-	}
+        return false;
+    }
 }

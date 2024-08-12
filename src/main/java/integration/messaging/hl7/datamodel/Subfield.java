@@ -15,91 +15,91 @@ import org.apache.commons.lang3.StringUtils;
  *
  */
 public class Subfield extends MessageComponent implements Serializable {
-	private static final long serialVersionUID = -8174677055244513493L;
+    private static final long serialVersionUID = -8174677055244513493L;
 
-	private List<SubSubfield> subSubFields = new ArrayList<>();
+    private List<SubSubfield> subSubFields = new ArrayList<>();
 
-	private FieldRepetition fieldRepetition = null;
+    private FieldRepetition fieldRepetition = null;
 
-	public Subfield(String subField, boolean handleSeperators, FieldRepetition fieldRepetition) {
-		this.fieldRepetition = fieldRepetition;
+    public Subfield(String subField, boolean handleSeperators, FieldRepetition fieldRepetition) {
+        this.fieldRepetition = fieldRepetition;
 
-		String[] splitSubSubFields = null;
+        String[] splitSubSubFields = null;
 
-		if (handleSeperators) {
-			splitSubSubFields = subField.split("\\&");
-		} else {
-			splitSubSubFields = new String[1];
-			splitSubSubFields[0] = subField;
-		}
+        if (handleSeperators) {
+            splitSubSubFields = subField.split("\\&");
+        } else {
+            splitSubSubFields = new String[1];
+            splitSubSubFields[0] = subField;
+        }
 
-		for (String value : splitSubSubFields) {
-			SubSubfield subSubField = new SubSubfield(value, this);
-			subSubFields.add(subSubField);
-		}
-	}
+        for (String value : splitSubSubFields) {
+            SubSubfield subSubField = new SubSubfield(value, this);
+            subSubFields.add(subSubField);
+        }
+    }
 
-	@Override
-	public String value() {
-		return toString();
-	}
+    @Override
+    public String value() {
+        return toString();
+    }
 
-	@Override
-	public void setValue(String value) throws Exception {
-		subSubFields.clear();
+    @Override
+    public void setValue(String value) throws Exception {
+        subSubFields.clear();
 
-		String[] splitSubSubFields = null;
+        String[] splitSubSubFields = null;
 
-		splitSubSubFields = value.split("\\&");
+        splitSubSubFields = value.split("\\&");
 
-		for (String subSubFieldValue : splitSubSubFields) {
-			SubSubfield subSubField = new SubSubfield(subSubFieldValue, this);
-			subSubFields.add(subSubField);
-		}
-	}
+        for (String subSubFieldValue : splitSubSubFields) {
+            SubSubfield subSubField = new SubSubfield(subSubFieldValue, this);
+            subSubFields.add(subSubField);
+        }
+    }
 
-	@Override
-	public String toString() {
-		return subSubFields.stream().map(SubSubfield::toString).collect(Collectors.joining("&"));
-	}
+    @Override
+    public String toString() {
+        return subSubFields.stream().map(SubSubfield::toString).collect(Collectors.joining("&"));
+    }
 
-	@Override
-	public void clear() throws Exception {
-		setValue("");
-	}
+    @Override
+    public void clear() throws Exception {
+        setValue("");
+    }
 
-	public FieldRepetition geFieldRepetition() {
-		return fieldRepetition;
-	}
+    public FieldRepetition geFieldRepetition() {
+        return fieldRepetition;
+    }
 
-	public SubSubfield getSubSubField(int subSubFieldIndex) {
-		return subSubFields.get(--subSubFieldIndex);
-	}
+    public SubSubfield getSubSubField(int subSubFieldIndex) {
+        return subSubFields.get(--subSubFieldIndex);
+    }
 
-	public List<SubSubfield> getSubSubFields() {
-		return subSubFields;
-	}
+    public List<SubSubfield> getSubSubFields() {
+        return subSubFields;
+    }
 
-	public void setSubSubFields(List<SubSubfield> subSubFields) {
-		this.subSubFields = subSubFields;
-	}
+    public void setSubSubFields(List<SubSubfield> subSubFields) {
+        this.subSubFields = subSubFields;
+    }
 
-	/**
-	 * Is this subfield empty?
-	 * 
-	 * @return
-	 */
-	public boolean isEmpty() {
-		return StringUtils.isBlank(toString());
-	}
+    /**
+     * Is this subfield empty?
+     * 
+     * @return
+     */
+    public boolean isEmpty() {
+        return StringUtils.isBlank(toString());
+    }
 
-	@Override
-	public int hashCode() {
-		return Objects.hashCode(this.toString());
-	}
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(this.toString());
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		return Objects.equals(this.toString(), obj.toString());
-	}
+    @Override
+    public boolean equals(Object obj) {
+        return Objects.equals(this.toString(), obj.toString());
+    }
 }

@@ -12,3 +12,6 @@ The HL7 components extends from the core messaging components.
 <br>
 <br>
 A lot needs to be done as this does not contain complete messaging functionality.
+<br>
+<br>
+Unit tests need to be written.

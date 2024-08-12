@@ -21,64 +21,61 @@ public class Field extends MessageComponent implements Serializable {
 	private static final long serialVersionUID = 3815655672813186758L;
 
 	private List<FieldRepetition> repetitions = new ArrayList<>();
-	
+
 	private Segment segment = null;
-	
-	protected Field() {}
-	
+
+	protected Field() {
+	}
+
 	public Field(String field, boolean handleSeperators, Segment segment) {
 		this.segment = segment;
-		
+
 		String[] splitFieldRepetitions = null;
-		
+
 		if (handleSeperators) {
 			splitFieldRepetitions = field.split("\\~");
 		} else {
 			splitFieldRepetitions = new String[1];
 			splitFieldRepetitions[0] = field;
 		}
-		
+
 		for (String value : splitFieldRepetitions) {
 			FieldRepetition repetition = new FieldRepetition(value, handleSeperators, this);
 			repetitions.add(repetition);
-		}		
+		}
 	}
 
-	
 	public List<FieldRepetition> getRepetitions() {
 		return repetitions;
 	}
-	
-	
+
 	public void setRepetitions(List<FieldRepetition> repetitions) {
 		this.repetitions = repetitions;
 	}
-	
-	
+
 	@Override
-	public String toString() {		
+	public String toString() {
 		String originalValue = repetitions.stream().map(FieldRepetition::toString).collect(Collectors.joining("~"));
-		
+
 		if (originalValue.isEmpty()) {
 			return originalValue;
 		}
-		
+
 		try {
 			String value = StringUtils.replace(originalValue, "^", "");
 			value = StringUtils.replace(value, "~", "");
 			value = StringUtils.replace(value, "&", "");
-			
+
 			if (value.isEmpty()) {
 				clear();
 			}
-		} catch(Exception e) {
+		} catch (Exception e) {
 			return "";
 		}
-		
+
 		return originalValue;
 	}
 
-	
 	/**
 	 * Returns a single repetition of this field.
 	 * 
@@ -89,28 +86,27 @@ public class Field extends MessageComponent implements Serializable {
 		if (repetition >= repetitions.size()) {
 			return addRepetition("");
 		}
-		
+
 		return repetitions.get(repetition);
 	}
-	
-	
+
 	/**
-	 * Returns the value of a repetition of this field.  If the repetition does not exist the returned value is an empty string.
+	 * Returns the value of a repetition of this field. If the repetition does not
+	 * exist the returned value is an empty string.
 	 * 
 	 * @param repetition
 	 * @return
 	 */
-	public String getRepetitionValue(int repetition) throws Exception{
+	public String getRepetitionValue(int repetition) throws Exception {
 		FieldRepetition fieldRepetition = getRepetition(repetition);
-		
+
 		if (fieldRepetition == null) {
 			return "";
 		}
-		
+
 		return fieldRepetition.value();
 	}
 
-	
 	/**
 	 * Removes a repetition of the field.
 	 * 
@@ -120,40 +116,38 @@ public class Field extends MessageComponent implements Serializable {
 		if (repetition > repetitions.size()) {
 			return;
 		}
-		
+
 		repetitions.remove(repetition);
 	}
-	
-	
+
 	/**
 	 * Removes a repetition of the field.
 	 * 
 	 * @param repetition
 	 */
-	public void removeRepetition(FieldRepetition repetition) throws Exception {		
+	public void removeRepetition(FieldRepetition repetition) throws Exception {
 		repetitions.remove(repetition);
 	}
-	
-	
+
 	/**
 	 * Removes a list of repetitions from the field.
 	 * 
 	 * @param repetition
 	 */
-	public void removeRepetitions(List<FieldRepetition> repetitionsToRemove) throws Exception {		
+	public void removeRepetitions(List<FieldRepetition> repetitionsToRemove) throws Exception {
 		repetitions.removeAll(repetitionsToRemove);
 	}
-	
-	
+
 	/**
 	 * Adds a repetition to this field.
 	 * 
 	 * @param fieldRepetition
 	 */
 	public void addRepetition(FieldRepetition fieldRepetition) throws Exception {
-		
-		// if the 1st repetition is empty then replace, otherwise add a new repetition to the end.
-		if (!this.value().isEmpty() ) {
+
+		// if the 1st repetition is empty then replace, otherwise add a new repetition
+		// to the end.
+		if (!this.value().isEmpty()) {
 			getRepetitions().add(fieldRepetition);
 		} else if (!repetitions.isEmpty()) {
 			getRepetitions().set(0, fieldRepetition);
@@ -161,8 +155,7 @@ public class Field extends MessageComponent implements Serializable {
 			getRepetitions().add(fieldRepetition);
 		}
 	}
-	
-	
+
 	/**
 	 * Add field repetitions to this field.
 	 * 
@@ -175,7 +168,6 @@ public class Field extends MessageComponent implements Serializable {
 		}
 	}
 
-	
 	/**
 	 * Adds a repetition to this field.
 	 * 
@@ -185,11 +177,10 @@ public class Field extends MessageComponent implements Serializable {
 	public FieldRepetition addRepetition(String value) throws Exception {
 		FieldRepetition fieldRepetition = new FieldRepetition(value, false, this);
 		this.addRepetition(fieldRepetition);
-		
+
 		return fieldRepetition;
 	}
 
-	
 	/**
 	 * Adds an empty repetition.
 	 * 
@@ -201,12 +192,12 @@ public class Field extends MessageComponent implements Serializable {
 		return addRepetition("");
 	}
 
-	
 	/**
 	 * Sets a field value.
 	 * 
 	 * @param value
-	 * @param clearExistingContent - if true the field value becomes the only value in this field.  All other repetitions are cleared.
+	 * @param clearExistingContent - if true the field value becomes the only value
+	 *                             in this field. All other repetitions are cleared.
 	 * @throws Exception
 	 */
 	@Override
@@ -214,16 +205,15 @@ public class Field extends MessageComponent implements Serializable {
 		repetitions.clear();
 
 		String[] splitFieldRepetitions = null;
-		
+
 		splitFieldRepetitions = value.split("\\~");
-		
+
 		for (String fieldValue : splitFieldRepetitions) {
 			FieldRepetition repetition = new FieldRepetition(fieldValue, true, this);
 			repetitions.add(repetition);
 		}
 	}
 
-	
 	/**
 	 * Returns the number of repetitions of this field.
 	 * 
@@ -232,15 +222,13 @@ public class Field extends MessageComponent implements Serializable {
 	public int getNumberOfRepetitions() {
 		return repetitions.size();
 	}
-	
-	
+
 	public Segment getSegment() {
 		return segment;
 	}
-	
-	
+
 	/**
-	 * Gets a subfield from this field.  Repetition 0.
+	 * Gets a subfield from this field. Repetition 0.
 	 * 
 	 * @param subFieldIndex
 	 * @return
@@ -248,10 +236,10 @@ public class Field extends MessageComponent implements Serializable {
 	public Subfield getSubField(int subFieldIndex) throws Exception {
 		return getSubField(0, subFieldIndex);
 	}
-	
-	
+
 	/**
-	 * Gets a subfield value as a string. Repetition 0. If the subfield does not exist then an empty string is returned.
+	 * Gets a subfield value as a string. Repetition 0. If the subfield does not
+	 * exist then an empty string is returned.
 	 * 
 	 * @param subFieldIndex
 	 * @return
@@ -259,8 +247,7 @@ public class Field extends MessageComponent implements Serializable {
 	public String getSubFieldValue(int subFieldIndex) throws Exception {
 		return getSubFieldValue(0, subFieldIndex);
 	}
-	
-	
+
 	/**
 	 * Gets a subfield from this field.
 	 * 
@@ -268,20 +255,20 @@ public class Field extends MessageComponent implements Serializable {
 	 * @return
 	 */
 	public Subfield getSubField(int repetition, int subFieldIndex) throws Exception {
-	
+
 		// If the subfield does not exist then add it.
 		if (subFieldIndex > getRepetitions().get(repetition).getSubFields().size()) {
 			addSubField("", subFieldIndex);
-			
+
 			return getSubField(subFieldIndex);
 		}
-		
+
 		return getRepetitions().get(repetition).getSubField(subFieldIndex);
 	}
-	
-	
+
 	/**
-	 * Gets a subfield value as a string.  If the subfield does not exist then an empty string is returned.
+	 * Gets a subfield value as a string. If the subfield does not exist then an
+	 * empty string is returned.
 	 * 
 	 * @param subFieldIndex
 	 * @return
@@ -290,19 +277,17 @@ public class Field extends MessageComponent implements Serializable {
 		if (subFieldIndex > getRepetitions().get(repetition).getSubFields().size()) {
 			return "";
 		}
-		
+
 		Subfield subField = getRepetitions().get(repetition).getSubField(subFieldIndex);
-				
-		return subField.value();			
+
+		return subField.value();
 	}
-	
-	
+
 	@Override
 	public String value() {
 		return toString();
 	}
-	
-	
+
 	/**
 	 * Clears the entire field, including all repetitions.
 	 */
@@ -310,25 +295,23 @@ public class Field extends MessageComponent implements Serializable {
 	public void clear() throws Exception {
 		setValue("");
 	}
-	
-	
+
 	/**
 	 * Clears a single repetition of the field
 	 * 
 	 * @param repetition
 	 */
 	public void clear(int repetition) throws Exception {
-		
+
 		FieldRepetition fieldRepetition = getRepetition(repetition);
-		
+
 		if (fieldRepetition == null) {
 			return;
 		}
-		
+
 		getRepetition(repetition).clear();
 	}
-	
-	
+
 	/**
 	 * Clears a subfield in all repetitions of a field
 	 * 
@@ -341,7 +324,6 @@ public class Field extends MessageComponent implements Serializable {
 		}
 	}
 
-	
 	/**
 	 * Clears all repetitions of a field.
 	 * 
@@ -351,10 +333,9 @@ public class Field extends MessageComponent implements Serializable {
 	public void clearAllRepetitions() throws Exception {
 		for (FieldRepetition repetition : this.getRepetitions()) {
 			repetition.clear();
-		}		
+		}
 	}
-	
-	
+
 	/**
 	 * Clears a subfield in a single repetition of a field.
 	 * 
@@ -364,18 +345,17 @@ public class Field extends MessageComponent implements Serializable {
 	 */
 	public void clearSubField(int subFieldIndex, int repetition) throws Exception {
 		FieldRepetition fieldRepetition = getRepetition(repetition);
-		
+
 		if (fieldRepetition == null) {
 			return;
 		}
-		
+
 		fieldRepetition.clearSubField(subFieldIndex);
 	}
 
-	
 	/**
-	 * Adds a subfield at the supplied position.  This inserts a new subfield, it does not replace the value
-	 * of an existing subfield.
+	 * Adds a subfield at the supplied position. This inserts a new subfield, it
+	 * does not replace the value of an existing subfield.
 	 * 
 	 * @param value
 	 * @param repetition
@@ -384,18 +364,17 @@ public class Field extends MessageComponent implements Serializable {
 	 */
 	public void addSubField(String value, int repetition, int subFieldIndex) throws Exception {
 		FieldRepetition fieldRepetition = this.getRepetition(repetition);
-		
+
 		if (fieldRepetition == null) {
 			return;
 		}
-		
+
 		fieldRepetition.addSubField(value, subFieldIndex);
 	}
-	
-	
+
 	/**
-	 * Adds a subfield at the supplied position.  This inserts a new subfield, it does not replace the value
-	 * of an existing subfield.  1st repetition only.
+	 * Adds a subfield at the supplied position. This inserts a new subfield, it
+	 * does not replace the value of an existing subfield. 1st repetition only.
 	 * 
 	 * @param value
 	 * @param subFieldIndex
@@ -405,10 +384,9 @@ public class Field extends MessageComponent implements Serializable {
 		addSubField(value, 0, subFieldIndex);
 	}
 
-	
 	/**
-	 * Adds a subfield at the supplied position.  This inserts a new subfield, it does not replace the value
-	 * of an existing subfield.
+	 * Adds a subfield at the supplied position. This inserts a new subfield, it
+	 * does not replace the value of an existing subfield.
 	 * 
 	 * @param subField
 	 * @param repetition
@@ -417,29 +395,27 @@ public class Field extends MessageComponent implements Serializable {
 	 */
 	public void addSubField(Subfield subField, int repetition, int subFieldIndex) throws Exception {
 		FieldRepetition fieldRepetition = this.getRepetition(repetition);
-		
+
 		if (fieldRepetition == null) {
 			return;
 		}
-		
+
 		fieldRepetition.addSubField(subField, subFieldIndex);
 	}
-	
-	
+
 	/**
-	 * Adds a subfield at the supplied position.  This inserts a new subfield, it does not replace the value
-	 * of an existing subfield.  1st repetition only.
+	 * Adds a subfield at the supplied position. This inserts a new subfield, it
+	 * does not replace the value of an existing subfield. 1st repetition only.
 	 * 
 	 * @param subField
 	 * @param repetition
 	 * @param subFieldIndex
 	 * @throws Exception
-	 */	
+	 */
 	public void addSubField(Subfield subField, int subFieldIndex) throws Exception {
 		addSubField(subField, subFieldIndex);
 	}
 
-	
 	/**
 	 * Is this field empty?
 	 * 
@@ -451,13 +427,12 @@ public class Field extends MessageComponent implements Serializable {
 				return false;
 			}
 		}
-		
+
 		return true;
 	}
-	
-	
+
 	/**
-	 * Checks to see if the sub field is empty.  Either doesn't exist or is blank.
+	 * Checks to see if the sub field is empty. Either doesn't exist or is blank.
 	 * 
 	 * @param fieldIndex
 	 * @return
@@ -466,46 +441,44 @@ public class Field extends MessageComponent implements Serializable {
 		return isSubFieldEmpty(0, subFieldIndex);
 	}
 
-	
 	/**
-	 * Checks to see if the sub field at the specified repetition is empty.  Either doesn't exist or is blank.
+	 * Checks to see if the sub field at the specified repetition is empty. Either
+	 * doesn't exist or is blank.
 	 * 
 	 * @param fieldIndex
 	 * @return
 	 */
 	public boolean isSubFieldEmpty(int repetition, int subFieldIndex) throws Exception {
 		FieldRepetition fieldRepetition = getRepetition(repetition);
-		
+
 		if (fieldRepetition == null) {
 			return true;
 		}
-		
+
 		Subfield subField = fieldRepetition.getSubField(subFieldIndex);
-				
+
 		return subField.isEmpty();
 	}
-	
-	
+
 	@Override
 	public int hashCode() {
 		return Objects.hashCode(this.toString());
 	}
 
-
 	@Override
-	public boolean equals(Object obj) {	
+	public boolean equals(Object obj) {
 		return Objects.equals(this.toString(), obj.toString());
 	}
-	
-	
+
 	/**
-	 * Combine all subField values into a single field with the supplied separator between the subfields.
+	 * Combine all subField values into a single field with the supplied separator
+	 * between the subfields.
 	 */
 	public void combineSubFields(int fieldRepetition, String separator, boolean allowSequentialSeparators) throws Exception {
 		StringBuilder sb = new StringBuilder();
-		
+
 		for (Subfield subField : getSubFields(fieldRepetition)) {
-		
+
 			if (sb.length() > 0) {
 				if (allowSequentialSeparators) {
 					sb.append(separator);
@@ -515,22 +488,21 @@ public class Field extends MessageComponent implements Serializable {
 					}
 				}
 			}
-			
+
 			sb.append(subField.value());
 		}
-		
+
 		this.setValue(sb.toString());
 	}
-	
-	
+
 	/**
-	 * Combine all subField values into a single field with the supplied separator between the subfields.
+	 * Combine all subField values into a single field with the supplied separator
+	 * between the subfields.
 	 */
 	public void combineSubFields(String separator, boolean allowSequentialSeparators) throws Exception {
 		combineSubFields(0, separator, allowSequentialSeparators);
 	}
-	
-	
+
 	/**
 	 * returns a list of the subFields for a field repetition.
 	 * 
@@ -538,15 +510,14 @@ public class Field extends MessageComponent implements Serializable {
 	 * @return
 	 * @throws Exception
 	 */
-	public List<Subfield>getSubFields(int fieldRepetition) throws Exception {
+	public List<Subfield> getSubFields(int fieldRepetition) throws Exception {
 		if (this.getRepetition(fieldRepetition) == null) {
 			return new ArrayList<Subfield>();
 		}
-		
+
 		return this.getRepetition(fieldRepetition).getSubFields();
 	}
-	
-	
+
 	/**
 	 * returns a list of the subFields for the 1st field repetition.
 	 * 
@@ -554,13 +525,13 @@ public class Field extends MessageComponent implements Serializable {
 	 * @return
 	 * @throws Exception
 	 */
-	public List<Subfield>getSubFields() throws Exception {
+	public List<Subfield> getSubFields() throws Exception {
 		return getSubFields(0);
 	}
-	
-	
+
 	/**
-	 * Clears all subFields from the startingSubFieldIndex in the supplied field repetition.
+	 * Clears all subFields from the startingSubFieldIndex in the supplied field
+	 * repetition.
 	 * 
 	 * @param fieldRepetition
 	 * @param startingSubFieldIndex
@@ -570,7 +541,6 @@ public class Field extends MessageComponent implements Serializable {
 		clearSubFieldRange(fieldRepetition, startingSubFieldIndex, -1);
 	}
 
-	
 	/**
 	 * Clears all subFields from the startingSubFieldIndex in all field repetitions.
 	 * 
@@ -583,9 +553,9 @@ public class Field extends MessageComponent implements Serializable {
 		}
 	}
 
-	
 	/**
-	 * Clears all subFields from the supplied startingFieldIndex to the endingFieldIndex in the supplied field repetition.
+	 * Clears all subFields from the supplied startingFieldIndex to the
+	 * endingFieldIndex in the supplied field repetition.
 	 * 
 	 * @param startingFieldIndex
 	 * @param endingFieldIndex
@@ -593,17 +563,17 @@ public class Field extends MessageComponent implements Serializable {
 	 */
 	public void clearSubFieldRange(int fieldRepetition, int startingSubFieldIndex, int endingSubFieldIndex) throws Exception {
 		FieldRepetition repetition = this.getRepetition(fieldRepetition);
-		
+
 		if (repetition == null) {
 			return;
 		}
-		
+
 		repetition.clearSubFieldRange(startingSubFieldIndex, endingSubFieldIndex);
 	}
 
-	
 	/**
-	 * Clears all subFields from the supplied startingFieldIndex to the endingFieldIndex in all field repetitions.
+	 * Clears all subFields from the supplied startingFieldIndex to the
+	 * endingFieldIndex in all field repetitions.
 	 * 
 	 * @param startingSubFieldIndex
 	 * @param endingSubFieldIndex
@@ -615,7 +585,6 @@ public class Field extends MessageComponent implements Serializable {
 		}
 	}
 
-	
 	/**
 	 * 
 	 * 
@@ -625,25 +594,23 @@ public class Field extends MessageComponent implements Serializable {
 	public boolean hasFieldMatchingValue(String value) {
 		return hasFieldMatchingValue("equals", value);
 	}
-	
-	
+
 	/**
 	 * 
 	 * 
 	 * @param value
 	 * @return
 	 */
-	public boolean hasFieldMatchingValue(String matchType, String ... matchValues) {
+	public boolean hasFieldMatchingValue(String matchType, String... matchValues) {
 		for (FieldRepetition fieldRepetition : this.repetitions) {
 			if (compare(matchType, fieldRepetition.value(), matchValues)) {
 				return true;
 			}
 		}
-		
+
 		return false;
 	}
 
-	
 	/**
 	 * 
 	 * 
@@ -652,17 +619,16 @@ public class Field extends MessageComponent implements Serializable {
 	 * @return
 	 * @throws Exception
 	 */
-	public boolean hasSubFieldMatchingValue(String matchType, int subFieldIndex, String ... matchValues) throws Exception {
+	public boolean hasSubFieldMatchingValue(String matchType, int subFieldIndex, String... matchValues) throws Exception {
 		for (FieldRepetition fieldRepetition : this.repetitions) {
 			if (compare(matchType, fieldRepetition.getSubField(subFieldIndex).value(), matchValues)) {
 				return true;
 			}
 		}
-		
-		return false;		
+
+		return false;
 	}
-	
-	
+
 	/**
 	 * 
 	 * 
@@ -674,31 +640,28 @@ public class Field extends MessageComponent implements Serializable {
 	public boolean hasSubFieldMatchingValue(int subFieldIndex, String value) throws Exception {
 		return hasSubFieldMatchingValue("equals", subFieldIndex, value);
 	}
-	
-	
+
 	/**
-	 * Removes field repetitions where the matchValue matches the subField value. 
+	 * Removes field repetitions where the matchValue matches the subField value.
 	 * 
 	 * @param subFieldIndex
 	 * @param matchValue
 	 */
-	public void removeMatchingFieldRepetitions(int subFieldIndex, String ... matchValues) throws Exception {
+	public void removeMatchingFieldRepetitions(int subFieldIndex, String... matchValues) throws Exception {
 		removeMatchingFieldRepetitions("equals", subFieldIndex, matchValues);
 	}
-	
-	
+
 	/**
-	 * Removes field repetitions where the matchValue matches the subField value. 
+	 * Removes field repetitions where the matchValue matches the subField value.
 	 * 
 	 * @param subFieldIndex
 	 * @param matchValue
 	 */
-	public void removeMatchingFieldRepetitions(String matchType, int subFieldIndex, String ... matchValues) throws Exception {
+	public void removeMatchingFieldRepetitions(String matchType, int subFieldIndex, String... matchValues) throws Exception {
 		List<FieldRepetition> fieldRepetitions = this.getRepetitionsMatchingValue(matchType, subFieldIndex, matchValues);
 		this.repetitions.removeAll(fieldRepetitions);
 	}
-	
-	
+
 	/**
 	 * Sets a subField value in all repetitions.
 	 * 
@@ -709,206 +672,209 @@ public class Field extends MessageComponent implements Serializable {
 
 		for (FieldRepetition repetition : getRepetitions()) {
 			Subfield subField = repetition.getSubField(subFieldIndex);
-			
+
 			if (subField != null) {
 				subField.setValue(value);
 			}
 		}
 	}
 
-
 	/**
-	 * Returns a repetition of this field Matching the supplied value at the supplied sub field index.  The first match is returned.
+	 * Returns a repetition of this field Matching the supplied value at the
+	 * supplied sub field index. The first match is returned.
 	 * 
 	 * @param subFieldIndex
 	 * @param value
 	 * @return
 	 * @throws Exception
 	 */
-	public FieldRepetition getRepetitionMatchingValue(String matchType, int subFieldIndex, String ... matchValues) throws Exception {
+	public FieldRepetition getRepetitionMatchingValue(String matchType, int subFieldIndex, String... matchValues)
+	        throws Exception {
 		for (FieldRepetition repetition : getRepetitions()) {
 			Subfield subField = repetition.getSubField(subFieldIndex);
-			
+
 			if (compare(matchType, subField.value(), matchValues)) {
 				return repetition;
 			}
 		}
-		
+
 		return null;
 	}
-	
-	
+
 	/**
-	 * Returns a repetition of this field Matching the supplied value at the supplied sub field index.  The first match is returned.
+	 * Returns a repetition of this field Matching the supplied value at the
+	 * supplied sub field index. The first match is returned.
 	 * 
 	 * @param subFieldIndex
 	 * @param value
 	 * @return
 	 * @throws Exception
 	 */
-	public FieldRepetition getRepetitionMatchingValue(int subFieldIndex, String ...matchValues) throws Exception {
+	public FieldRepetition getRepetitionMatchingValue(int subFieldIndex, String... matchValues) throws Exception {
 		return getRepetitionMatchingValue("equals", subFieldIndex, matchValues);
 	}
-	
-	
+
 	/**
-	 * Returns a list of repetitions of this field Matching the supplied value at the supplied sub field index.
+	 * Returns a list of repetitions of this field Matching the supplied value at
+	 * the supplied sub field index.
 	 * 
 	 * @param subFieldIndex
 	 * @param value
 	 * @return
 	 * @throws Exception
 	 */
-	public List<FieldRepetition> getRepetitionsMatchingValue(String matchType, int subFieldIndex, String ... matchValues) throws Exception {
-		List<FieldRepetition>fieldRepetitions = new ArrayList<>();
-		
+	public List<FieldRepetition> getRepetitionsMatchingValue(String matchType, int subFieldIndex, String... matchValues)
+	        throws Exception {
+		List<FieldRepetition> fieldRepetitions = new ArrayList<>();
+
 		for (FieldRepetition repetition : getRepetitions()) {
 			Subfield subField = repetition.getSubField(subFieldIndex);
-			
+
 			if (compare(matchType, subField.value(), matchValues)) {
 				fieldRepetitions.add(repetition);
 			}
 		}
-		
+
 		return fieldRepetitions;
 	}
-	
-	
+
 	/**
-	 * Returns a list of repetitions of this field Matching the supplied value at the supplied sub field index.
+	 * Returns a list of repetitions of this field Matching the supplied value at
+	 * the supplied sub field index.
 	 * 
 	 * @param subFieldIndex
 	 * @param value
 	 * @return
 	 * @throws Exception
 	 */
-	public List<FieldRepetition> getRepetitionsMatchingValue(int subFieldIndex, String ... matchValues) throws Exception {
+	public List<FieldRepetition> getRepetitionsMatchingValue(int subFieldIndex, String... matchValues) throws Exception {
 		return getRepetitionsMatchingValue("equals", subFieldIndex, matchValues);
 	}
 
-	
 	/**
-	 * Removes duplicates from a field repetition.  The value at subFieldIndex is checked
+	 * Removes duplicates from a field repetition. The value at subFieldIndex is
+	 * checked
 	 * 
 	 * @param subFieldIndex
 	 */
 	public void removeDuplicateRepetitions(int subFieldIndex) throws Exception {
-		Set<String>repetitionValues = new TreeSet<>();
-		
-		for (Iterator<FieldRepetition> iter = this.getRepetitions().iterator(); iter.hasNext(); ) {
+		Set<String> repetitionValues = new TreeSet<>();
+
+		for (Iterator<FieldRepetition> iter = this.getRepetitions().iterator(); iter.hasNext();) {
 			FieldRepetition repetition = iter.next();
-		
-			// Attempt to add the value to a set.  If the add method returns false then the set already contains that value which means it is a duplicate so the repetition can be removed.
+
+			// Attempt to add the value to a set. If the add method returns false then the
+			// set already contains that value which means it is a duplicate so the
+			// repetition can be removed.
 			if (!repetitionValues.add(repetition.getSubField(subFieldIndex).value())) {
 				iter.remove();
 			}
 		}
 	}
-	
-	
+
 	/**
-	 * Removes duplicates from a field repetition.  The entire repetition value is checked.
+	 * Removes duplicates from a field repetition. The entire repetition value is
+	 * checked.
 	 * 
 	 * @param subFieldIndex
 	 */
 	public void removeDuplicateRepetitions() throws Exception {
-		Set<String>repetitionValues = new TreeSet<>();
-		
-		for (Iterator<FieldRepetition> iter = this.getRepetitions().iterator(); iter.hasNext(); ) {
+		Set<String> repetitionValues = new TreeSet<>();
+
+		for (Iterator<FieldRepetition> iter = this.getRepetitions().iterator(); iter.hasNext();) {
 			FieldRepetition repetition = iter.next();
-		
-			// Attempt to add the value to a set.  If the add method returns false then the set already contains that value which means it is a duplicate so the repetition can be removed.
+
+			// Attempt to add the value to a set. If the add method returns false then the
+			// set already contains that value which means it is a duplicate so the
+			// repetition can be removed.
 			if (!repetitionValues.add(repetition.value())) {
 				iter.remove();
 			}
 		}
 	}
 
-	
 	/**
-	 * Does one of the supplied match values match the text using the supplied match type.
+	 * Does one of the supplied match values match the text using the supplied match
+	 * type.
 	 * 
 	 * @param matchType
 	 * @param text
 	 * @param compareValue
 	 * @return
 	 */
-	private boolean compare(String matchType, String text, String ... matchValues) {
+	private boolean compare(String matchType, String text, String... matchValues) {
 		MatchTypeEnum type = MatchTypeEnum.get(matchType);
-		
+
 		boolean result = false;
 		if (matchType.toLowerCase().startsWith("not")) {
 			result = true;
 		}
-		
 
 		if (matchValues == null) {
 			return false;
 		}
-		
-		
+
 		for (String matchValue : matchValues) {
 			if (matchValue == null) {
 				return false;
 			}
-			
-			
+
 			switch (type) {
-				case EQUALS:
-					if  (text.equals(matchValue)) {
-						result = true;
-					}
-					break;
-				case EQUALS_IGNORE_CASE:
-				    if  (text.equalsIgnoreCase(matchValue)) {
-				        result = true;
-				    }
-				    break;
-				case CONTAINS:
-					if (text.contains(matchValue)) {
-						result = true;
-					}
-				case ENDS_WITH:
-					if (text.endsWith(matchValue)) {
-						result = true;
-					}
-					break;
-				case STARTS_WITH:
-					if (text.startsWith(matchValue)) {
-						result = true;
-					}
-					break;
-				case NOT_ENDS_WITH:
-					if (text.endsWith(matchValue)) {
-						result = false;
-					}
-					break;
-				case NOT_CONTAINS:
-					if (text.contains(matchValue)) {
-						result = false;
-					}
-				case NOT_STARTS_WITH:
-					if (text.startsWith(matchValue)) {
-						result = false;
-					}
-					break;
-				case NOT_EQUALS:
-					if  (text.equals(matchValue)) {
-						result = false;
-					}
-					break;
-				case NOT_EQUALS_IGNORE_CASE:
-				    if  (text.equalsIgnoreCase(matchValue)) {
-				        result = false;
-				    }
-				    break;
-				default:
-					if (text.equals(matchValue)) {
-						return true;
-					}
+			case EQUALS:
+				if (text.equals(matchValue)) {
+					result = true;
+				}
+				break;
+			case EQUALS_IGNORE_CASE:
+				if (text.equalsIgnoreCase(matchValue)) {
+					result = true;
+				}
+				break;
+			case CONTAINS:
+				if (text.contains(matchValue)) {
+					result = true;
+				}
+			case ENDS_WITH:
+				if (text.endsWith(matchValue)) {
+					result = true;
+				}
+				break;
+			case STARTS_WITH:
+				if (text.startsWith(matchValue)) {
+					result = true;
+				}
+				break;
+			case NOT_ENDS_WITH:
+				if (text.endsWith(matchValue)) {
+					result = false;
+				}
+				break;
+			case NOT_CONTAINS:
+				if (text.contains(matchValue)) {
+					result = false;
+				}
+			case NOT_STARTS_WITH:
+				if (text.startsWith(matchValue)) {
+					result = false;
+				}
+				break;
+			case NOT_EQUALS:
+				if (text.equals(matchValue)) {
+					result = false;
+				}
+				break;
+			case NOT_EQUALS_IGNORE_CASE:
+				if (text.equalsIgnoreCase(matchValue)) {
+					result = false;
+				}
+				break;
+			default:
+				if (text.equals(matchValue)) {
+					return true;
+				}
 			}
 		}
-		
+
 		return result;
 	}
 }

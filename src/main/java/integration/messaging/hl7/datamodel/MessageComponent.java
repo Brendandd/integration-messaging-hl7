@@ -9,7 +9,7 @@ import org.apache.commons.lang3.StringUtils;
  *
  */
 public abstract class MessageComponent {
-	
+
 	/**
 	 * Gets the components value.
 	 * 
@@ -17,25 +17,22 @@ public abstract class MessageComponent {
 	 * @throws Exception
 	 */
 	public abstract String value() throws Exception;
-	
-	
+
 	/**
 	 * Sets the components value.
 	 * 
 	 * @param value
 	 * @throws Exception
 	 */
-	public abstract  void setValue(String value) throws Exception;
-	
-	
+	public abstract void setValue(String value) throws Exception;
+
 	/**
 	 * Clears the components value.
 	 * 
 	 * @throws Exception
 	 */
-	public abstract  void clear() throws Exception;
-	
-	
+	public abstract void clear() throws Exception;
+
 	/**
 	 * Copies the value from the sourceComponent to this component
 	 * 
@@ -44,10 +41,10 @@ public abstract class MessageComponent {
 	public void copy(MessageComponent sourceComponent) throws Exception {
 		this.setValue(sourceComponent.value());
 	}
-	
-	
+
 	/**
-	 * Copies the source component value to this component if this component is empty.
+	 * Copies the source component value to this component if this component is
+	 * empty.
 	 * 
 	 * @param sourceComponent
 	 * @throws Exception
@@ -57,10 +54,10 @@ public abstract class MessageComponent {
 			copy(sourceComponent);
 		}
 	}
-	
-	
+
 	/**
-	 * Moves the value from the sourceComponent to this component.  This is a copy followed by a clear.
+	 * Moves the value from the sourceComponent to this component. This is a copy
+	 * followed by a clear.
 	 * 
 	 * @param sourceComponent
 	 */
@@ -68,8 +65,7 @@ public abstract class MessageComponent {
 		copy(sourceComponent);
 		sourceComponent.clear();
 	}
-	
-	
+
 	/**
 	 * Swaps the values of the 2 components.
 	 * 
@@ -79,12 +75,11 @@ public abstract class MessageComponent {
 	public void swap(MessageComponent sourceComponent) throws Exception {
 		String thisValue = this.value();
 		String sourceComponentValue = sourceComponent.value();
-		
+
 		this.setValue(sourceComponentValue);
 		sourceComponent.setValue(thisValue);
 	}
-	
-	
+
 	/**
 	 * Appends a value to the end of the components value.
 	 * 
@@ -93,11 +88,10 @@ public abstract class MessageComponent {
 	 */
 	public void append(String valueToAppend) throws Exception {
 		String currentValue = this.value();
-		
+
 		this.setValue(currentValue + valueToAppend);
 	}
 
-	
 	/**
 	 * Prepends a value to the beginning of the components value.
 	 * 
@@ -106,11 +100,10 @@ public abstract class MessageComponent {
 	 */
 	public void prepend(String valueToPrepend) throws Exception {
 		String currentValue = this.value();
-		
-		this.setValue(valueToPrepend + currentValue);		
+
+		this.setValue(valueToPrepend + currentValue);
 	}
-	
-	
+
 	/**
 	 * Returns this components value unescaped.
 	 * 
@@ -120,7 +113,7 @@ public abstract class MessageComponent {
 	public String unescapedValue() throws Exception {
 		return EscapeSequenceEnum.unescape(this.value());
 	}
-	
+
 	/**
 	 * Returns this components value escaped.
 	 * 

@@ -12,15 +12,14 @@ import integration.messaging.hl7.datamodel.HL7Message;
  *
  */
 public abstract class DeleteSegmentTransformer extends BaseHL7MessageTransformer {
-	
+
 	public abstract String getSegmentToDelete();
 
-	
 	@Override
 	public void transform(Exchange exchange, HL7Message source) throws TransformationException {
 		try {
 			source.removeAllSegments(getSegmentToDelete());
-		} catch(Exception e) {
+		} catch (Exception e) {
 			throw new TransformationException("Error transforming the message", e);
 		}
 	}

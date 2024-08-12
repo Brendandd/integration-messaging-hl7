@@ -14,13 +14,12 @@ public abstract class BaseHL7MessageTransformer extends MessageTransformer {
 	@Override
 	public String transformMessage(Exchange exchange, String messageBody) throws TransformationException {
 		HL7Message sourceHL7Message = new HL7Message(messageBody);
-		
+
 		transform(exchange, sourceHL7Message);
-		
+
 		return sourceHL7Message.toString();
 	}
 
-	
 	/**
 	 * Does the actual transformation.
 	 * 

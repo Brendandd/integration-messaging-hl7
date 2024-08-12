@@ -17,6 +17,6 @@ public abstract class BaseHL7OutboundDirectoryCommunicationPoint extends BaseDir
 	public String getContentType() {
 		return CONTENT_TYPE;
 	}
-	
-	//TODO complete functionality.  
+
+	// TODO complete functionality.
 }

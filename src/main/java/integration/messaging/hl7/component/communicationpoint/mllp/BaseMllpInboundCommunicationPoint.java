@@ -8,8 +8,8 @@ import org.springframework.context.annotation.DependsOn;
 import integration.messaging.component.communicationpoint.BaseInboundCommunicationPoint;
 
 /**
- * Base class for all MLLP input communication points. This components reads the
- * HL7 message, stores it, writes an event and returns an ack.
+ * Base class for all MLLP/HL7 inbound communication points. This components reads the
+ * HL7 message, stores it, writes an event and returns an ACK to the sender.
  * 
  * @author Brendan Douglas
  *
@@ -51,27 +51,45 @@ public abstract class BaseMllpInboundCommunicationPoint extends BaseInboundCommu
     public void configure() throws Exception {
         super.configure();
 
-        // Inbound message flow for an MLLP receiver.
+        // A route to receive a HL7 message via MLLP, store the message, store an event and generate and send the ACK all
+        // within a single transaction.  This is the initial entry point for a HL7 message.
         from(getFromUriString()).routeId("messageReceiver-" + identifier.getComponentPath())
-                .routeGroup(identifier.getComponentPath()).autoStartup(isInboundRunning).transacted()
-                .bean(messageProcessor, "storeInboundMessageFlowStep(*," + identifier.getComponentRouteId() + ")")
-                .transform(ack()).bean(messageProcessor, "recordAck(*," + identifier.getComponentRouteId() + ")")
-                .bean(messageProcessor, "recordInboundProcessingCompleteEvent(*)");
-
-        TemplatedRouteBuilder.builder(camelContext, "handleInboundProcessingCompleteEventTemplate")
-                .parameter("isOutboundRunning", isOutboundRunning).parameter("componentPath", identifier.getComponentPath())
-                .add();
-
-        TemplatedRouteBuilder.builder(camelContext, "readMessageFromInboundProcessingCompleteQueueTemplate")
-                .parameter("isOutboundRunning", isOutboundRunning).parameter("componentPath", identifier.getComponentPath())
-                .parameter("componentRouteId", identifier.getComponentRouteId()).add();
-
+            .setHeader("contentType", constant(getContentType()))
+            .routeGroup(identifier.getComponentPath()).autoStartup(isInboundRunning).transacted()
+            .bean(messageProcessor, "storeInboundMessageFlowStep(*," + identifier.getComponentRouteId() + ")")
+            .transform(ack())
+            .bean(messageProcessor, "recordAck(*," + identifier.getComponentRouteId() + ")")
+            .bean(messageProcessor, "recordInboundProcessingCompleteEvent(*)");
+        
+        
+        // A route to add the message flow step id to the inbound processing complete queue so it can be picked up by the outbound processor.
+        TemplatedRouteBuilder.builder(camelContext, "addToInboundProcessingCompleteQueueTemplate")
+            .parameter("isOutboundRunning", isOutboundRunning).parameter("componentPath", identifier.getComponentPath())
+            .add();
+        
+        
+        // A route to read the message flow step id from the inbound processing complete queue.  This is the entry point for the outbound processor.
+        TemplatedRouteBuilder.builder(camelContext, "readFromInboundProcessingCompleteQueueTemplate")
+            .parameter("isOutboundRunning", isOutboundRunning).parameter("componentPath", identifier.getComponentPath())
+            .parameter("componentRouteId", identifier.getComponentRouteId())
+            .parameter("contentType", constant(getContentType()))
+            .add();
+        
+        
+        // Outbound processor for a HL7/MLLP inbound communication point.  This route will either create an event for further processing by other components or filter
+        // the message.  No other processing is done here.
         TemplatedRouteBuilder.builder(camelContext, "inboundCommunicationPointOutboundProcessorTemplate")
-                .parameter("isOutboundRunning", isOutboundRunning).parameter("componentPath", identifier.getComponentPath())
-                .parameter("componentRouteId", identifier.getComponentRouteId())
-                .bean("messageForwardingPolicy", getMessageForwardingPolicy()).add();
-
-        TemplatedRouteBuilder.builder(camelContext, "outboundProcessingCompleteTopicConsumer")
-                .parameter("componentPath", identifier.getComponentPath()).add();
+            .parameter("isOutboundRunning", isOutboundRunning).parameter("componentPath", identifier.getComponentPath())
+            .parameter("componentRouteId", identifier.getComponentRouteId())
+            .parameter("contentType", getContentType())
+            .bean("messageForwardingPolicy", getMessageForwardingPolicy())
+            .add();
+        
+        
+        // Add the message flow step id to the outbound processing complete topic so it can be picked up by one or more other components.  This is the final
+        // step in HL7/MLLP inbound communication points.
+        TemplatedRouteBuilder.builder(camelContext, "addToOutboundProcessingCompleteTopicTemplate")
+            .parameter("componentPath", identifier.getComponentPath())
+            .add();
     }
 }
